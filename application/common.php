@@ -10,3 +10,19 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+
+if (!function_exists('respondApi')) {
+    //接口统一回复
+    function respondApi($data=[],$status='',$msg='')
+    {
+        $status = $status ?: \app\common\Codes::ACTION_SUC;
+        $msg = $msg ?: \app\common\Codes::get(\app\common\Codes::ACTION_SUC);
+        $arr = [
+            'status' => $status,
+            'msg' => $msg,
+            'data' => $data
+        ];
+
+        return json($arr);
+    }
+}
