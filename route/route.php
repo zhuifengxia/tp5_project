@@ -79,6 +79,14 @@ Route::group('api/resume',[
     'update'=>['api/Resume/resumeUpdate',['method' => 'post']],
 ]);
 
+//用户中心
+Route::group('api/user',[
+    //用户登录
+    'login'=>['api/Users/Login',['method' => 'post']],
+    //注册
+    'register'=>['api/Users/Register',['method' => 'post']],
+]);
+
 
 return [
 
