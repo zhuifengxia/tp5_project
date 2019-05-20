@@ -32,7 +32,7 @@ class Helper
             //获取文件扩展名
             $exten_name = pathinfo($file['name'], PATHINFO_EXTENSION);
             //重新命名图片名称
-            $picname = Helper::custom_mt_uniqid() . "." . $exten_name;//重新命名文件名
+            $picname = time() . "." . $exten_name;//重新命名文件名
             $fpath = $filepath;
             //路径是否存在，不存在则创建
             if (!is_dir($fpath)) mkdir($fpath, 0777);

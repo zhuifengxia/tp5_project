@@ -11,6 +11,7 @@ use app\common\Helper;
 use think\Controller;
 
 use app\common\model\News as NewsModel;
+use think\facade\Env;
 
 class News extends Controller
 {
@@ -157,13 +158,12 @@ class News extends Controller
             return respondApi([], $status, $msg);
         }
 
-
         $filename="";
-        if($_FILES['indeximg']){
+        if($_FILES['indeximg']['tmp_name']){
             //文件上传目录
-            $filepath = Env::get('ROOT_PATH') . 'public/static/upload/' . date('Y-m-d') . "/";
+            $filepath = Env::get('ROOT_PATH') . 'public/static/upload/' . date('Ymd') . "/";
             //上传文件返回文件名
-            $filename = Helper::singlefileupload('', $_FILES['indeximg'], $filepath, '/static/upload/' . date('Y-m-d'));
+            $filename = Helper::singlefileupload('', $_FILES['indeximg'], $filepath, '/static/upload/' . date('Ymd'."/"));
         }
 
         $data = [
