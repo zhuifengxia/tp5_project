@@ -160,9 +160,9 @@ class Cooperate extends Controller
         $filename="";
         if($_FILES['img']){
             //文件上传目录
-            $filepath = Env::get('ROOT_PATH') . 'public/static/upload/' . date('Y-m-d') . "/";
+            $filepath = Env::get('ROOT_PATH') . 'public/static/upload/' . date('Ymd') . "/";
             //上传文件返回文件名
-            $filename = Helper::singlefileupload('', $_FILES['img'], $filepath, '/static/upload/' . date('Y-m-d'));
+            $filename = Helper::singlefileupload('', $_FILES['img'], $filepath, '/static/upload/' . date('Ymd'). "/");
         }
         $data = [
             'cooperate_name' => $name,
