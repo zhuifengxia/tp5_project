@@ -49,7 +49,7 @@ Route::group('api/cooperate',[
 //项目案例相关
 Route::group('api/case',[
     //列表数据
-    'list/[:datatype]'=>['api/Cases/caseList',['method' => 'get']],
+    'list/[:typeid]'=>['api/Cases/caseList',['method' => 'get']],
     //删除
     'delete'=>['api/Cases/caseDelete',['method' => 'post']],
     //修改/新增

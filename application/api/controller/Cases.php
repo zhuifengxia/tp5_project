@@ -10,7 +10,7 @@ use app\common\Codes;
 use app\common\Helper;
 use think\Controller;
 
-use app\common\model\Cooperate as CooperateModel;
+use app\common\model\Cases as CasesModel;
 use think\facade\Env;
 
 class Cases extends Controller
@@ -22,22 +22,22 @@ class Cases extends Controller
 
 
     /**
-     * @api {get} /api/cooperate/list/[:datatype] 合作列表数据
-     * @apiName cooperateList
-     * @apiGroup cooperate
-     * @apiDescription 获取品牌合作或者客户合作列表数据
+     * @api {get} /api/case/list/[:typeid] 项目案例数据
+     * @apiName caseList
+     * @apiGroup case
+     * @apiDescription 获取项目案例数据
      * @apiVersion 1.0.0
      *
-     * @apiParam {int} datatype 0品牌合作；1客户合作
+     * @apiParam {int} typeid 0半导体；1核焊级；2尿素；3脱硫脱硝；4环保
      *
      * @apiSuccess {int} status 状态值
      * @apiSuccess {string} msg 状态描述
      * @apiSuccess {json} data 数据集合
      * @apiSuccess {int} id 合作id
-     * @apiSuccess {string} cooperate_name 合作名称
-     * @apiSuccess {string} cooperate_img 合作图片
-     * @apiSuccess {string} cooperate_info 介绍
-     * @apiSuccess {int} data_type 0品牌合作（带图）；1客户合作（仅文字）
+     * @apiSuccess {string} type_name 案例标题
+     * @apiSuccess {string} img_url 图片地址
+     * @apiSuccess {string} data_info 图文内容
+     * @apiSuccess {int} type_id 0半导体；1核焊级；2尿素；3脱硫脱硝；4环保
      * @apiSuccess {int} create_time 发布时间
      * @apiSuccess {int} update_time 更新时间
      *
@@ -47,10 +47,10 @@ class Cases extends Controller
         "msg": "操作成功",
         "data": [{
         "id": 1,
-        "cooperate_name": "长城润滑油",
-        "cooperate_img": null,
-        "cooperate_info": "介绍介绍介绍",
-        "data_type": 0,
+        "type_name": "aaa",
+        "img_url": null,
+        "type_id": "0",
+        "data_info": "介绍介绍介绍",
         "create_time": 0,
         "update_time": 0
         }]
@@ -64,21 +64,21 @@ class Cases extends Controller
      * @apiError 0 请求成功
      * @apiError -1 请求失败
      */
-    public function cooperateList($datatype=0)
+    public function caseList($typeid=0)
     {
-        $data = CooperateModel::where('data_type',$datatype)
+        $data = CasesModel::where('type_id',$typeid)
             ->select();
         return respondApi($data);
     }
 
     /**
-     * @api {post} /api/cooperate/delete 删除合作信息
-     * @apiName cooperateDelete
-     * @apiGroup cooperate
-     * @apiDescription 删除某个合作信息
+     * @api {post} /api/case/delete 删除项目案例
+     * @apiName caseDelete
+     * @apiGroup case
+     * @apiDescription 删除某个项目案例
      * @apiVersion 1.0.0
      *
-     * @apiParam {int} id 合作id
+     * @apiParam {int} id 案例id
      *
      * @apiSuccess {int} status 状态值
      * @apiSuccess {string} msg 状态描述
@@ -99,11 +99,11 @@ class Cases extends Controller
      * @apiError -1 请求失败
      * @apiError 1004 缺少参数
      */
-    public function cooperateDelete()
+    public function caseDelete()
     {
         $id = input('id', 0);
         if ($id) {
-            CooperateModel::where('id', $id)
+            CasesModel::where('id', $id)
                 ->delete();
             return respondApi();
         } else {
@@ -115,17 +115,17 @@ class Cases extends Controller
     }
 
     /**
-     * @api {post} /api/cooperate/update 新增/更新合作信息
-     * @apiName cooperateUpdate
-     * @apiGroup cooperate
-     * @apiDescription 新增或者更新合作信息
+     * @api {post} /api/case/update 新增/更新项目案例
+     * @apiName caseUpdate
+     * @apiGroup case
+     * @apiDescription 新增或者更新项目案例
      * @apiVersion 1.0.0
      *
-     * @apiParam {int} id [可选]合作id,编辑传id
-     * @apiParam {string} name 合作名称
-     * @apiParam {string} info 合作介绍
-     * @apiParam {file} img  [可选]品牌合作的时候上传图片
-     * @apiParam {int} type 0品牌合作（带图）；1客户合作（仅文字）
+     * @apiParam {int} id [可选]案例id,编辑传id
+     * @apiParam {string} typename 案例标题
+     * @apiParam {file} img 案例图片【1核焊级；2尿素此参数作为封面图】
+     * @apiParam {file} datainfo 案例信息【0半导体；3脱硫脱硝；4环保无此信息】
+     * @apiParam {int} typeid 0半导体；1核焊级；2尿素；3脱硫脱硝；4环保
      *
      * @apiSuccess {int} status 状态值
      * @apiSuccess {string} msg 状态描述
@@ -146,17 +146,12 @@ class Cases extends Controller
      * @apiError -1 请求失败
      * @apiError 1004 缺少参数
      */
-    public function cooperateUpdate()
+    public function caseUpdate()
     {
         $id = input('id', 0);
-        $name = input('name', '');
-        $info = input('info', 0);
-        $type = input('type', 0);
-        if (empty($name)) {
-            $status = Codes::PARAM_ERR;
-            $msg = Codes::get($status);
-            return respondApi([], $status, $msg);
-        }
+        $name = input('typename', '');
+        $info = input('datainfo', 0);
+        $type = input('typeid', 0);
         $filename="";
         if($_FILES['img']){
             //文件上传目录
@@ -165,17 +160,17 @@ class Cases extends Controller
             $filename = Helper::singlefileupload('', $_FILES['img'], $filepath, '/static/upload/' . date('Ymd'.'/'));
         }
         $data = [
-            'cooperate_name' => $name,
-            'cooperate_img' => $filename,
-            'cooperate_info' => $info,
-            'data_type' => $type,
+            'type_name' => $name,
+            'img_url' => $filename,
+            'data_info' => $info,
+            'type_id' => $type,
             'update_time' => time()
         ];
         if (empty($id)) {
             $data['create_time'] = time();
-            CooperateModel::create($data);
+            CasesModel::create($data);
         } else {
-            CooperateModel::where('id', $id)
+            CasesModel::where('id', $id)
                 ->update($data);
         }
         return respondApi();
